@@ -1,0 +1,16 @@
+[
+  { "name": "TimeGenerated", "type": "datetime", "description": "Event time at the gateway" },
+  { "name": "Usuario", "type": "string", "description": "UPN of the human on whose behalf the agent acts" },
+  { "name": "Agente", "type": "string", "description": "Agent identity (Entra Agent ID app ID or name)" },
+  { "name": "Cliente", "type": "string", "description": "MCP client or host (VS Code, Copilot Studio, custom app)" },
+  { "name": "Servidor", "type": "string", "description": "MCP server name as registered in the internal registry" },
+  { "name": "VersionServidor", "type": "string", "description": "Server version reported during initialization" },
+  { "name": "Operacion", "type": "string", "description": "JSON-RPC method, for example tools/list or tools/call" },
+  { "name": "Herramienta", "type": "string", "description": "Tool name for tools/call" },
+  { "name": "HuellaDefiniciones", "type": "string", "description": "SHA-256 of the canonical tool definitions returned by tools/list" },
+  { "name": "ArgumentosRedactados", "type": "string", "description": "Tool arguments with secrets and personal data redacted" },
+  { "name": "DestinosEnArgumentos", "type": "dynamic", "description": "External hosts or email domains found in the arguments" },
+  { "name": "BytesRespuesta", "type": "long", "description": "Size of the tool response" },
+  { "name": "Resultado", "type": "string", "description": "ok, error or blocked" },
+  { "name": "DuracionMs", "type": "int", "description": "Call duration in milliseconds" }
+]

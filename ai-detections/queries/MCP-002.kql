@@ -1,0 +1,11 @@
+// Agent calling an MCP tool it never used in the previous 14 days
+let historico = MCPGateway_CL
+    | where TimeGenerated between (ago(14d) .. ago(1h))
+    | where Operacion == "tools/call"
+    | distinct Agente, Herramienta;
+MCPGateway_CL
+| where TimeGenerated > ago(1h)
+| where Operacion == "tools/call"
+| join kind=leftanti historico on Agente, Herramienta
+| summarize Llamadas = count(), Usuarios = make_set(Usuario, 10), Primera = min(TimeGenerated)
+    by Agente, Herramienta, Servidor

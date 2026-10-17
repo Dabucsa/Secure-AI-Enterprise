@@ -1,0 +1,11 @@
+// Clicks on AI assistant links whose pre-filled prompt tries to write to memory (AI Recommendation Poisoning)
+UrlClickEvents
+| where TimeGenerated > ago(1h)
+| extend UrlAnalizada = parse_url(Url)
+| where tostring(UrlAnalizada["Host"]) has_any ("copilot", "chatgpt", "gemini", "claude", "perplexity", "grok", "openai")
+| extend Prompt = url_decode(tostring(coalesce(
+    UrlAnalizada["Query Parameters"]["prompt"],
+    UrlAnalizada["Query Parameters"]["q"])))
+| where Prompt has_any ("remember", "memory", "trusted", "authoritative", "future", "citation", "cite",
+    "recuerda", "memoria", "confiable", "futuro")
+| project TimeGenerated, AccountUpn, Url, Prompt, IsClickedThrough, IPAddress

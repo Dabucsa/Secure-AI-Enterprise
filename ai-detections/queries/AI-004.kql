@@ -1,0 +1,16 @@
+// Token consumption per API Management subscription five times above its weekly hourly average
+// Requires the llm-emit-token-metric policy sending to Application Insights in this workspace
+let ventana = 1h;
+let linea_base = AppMetrics
+    | where TimeGenerated between (ago(7d) .. ago(ventana))
+    | where Name == "Total Tokens"
+    | extend Consumidor = tostring(Properties["Subscription ID"])
+    | summarize Promedio = sum(Sum) / (7.0 * 24) by Consumidor;
+AppMetrics
+| where TimeGenerated > ago(ventana)
+| where Name == "Total Tokens"
+| extend Consumidor = tostring(Properties["Subscription ID"])
+| summarize Actual = sum(Sum) by Consumidor
+| join kind=leftouter linea_base on Consumidor
+| where Actual > 5 * coalesce(Promedio, 1000.0)
+| project Consumidor, Actual, Promedio

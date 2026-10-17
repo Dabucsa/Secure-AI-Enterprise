@@ -1,0 +1,197 @@
+[
+  {
+    "id": "AI-001", "group": "core", "severity": "High",
+    "displayName": "AI - Multiple Defender for AI alerts on the same resource",
+    "description": "Three or more Defender for AI Services alerts (jailbreak, prompt injection, credential theft, data leakage) on the same AI resource within an hour. Usually means an active attack against an AI application.",
+    "tactics": ["Execution", "Exfiltration"], "techniques": [],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "AzureResource", "fieldMappings": [{ "identifier": "ResourceId", "columnName": "IdRecurso" }] }
+    ]
+  },
+  {
+    "id": "AI-002", "group": "core", "severity": "Medium",
+    "displayName": "AI - Azure OpenAI or Foundry keys listed by an unapproved identity",
+    "description": "ListKeys on a Cognitive Services account by an identity that is not in the IdentidadesDespliegueIA watchlist. Keys allow anyone to consume the model and are the main LLMjacking entry point.",
+    "tactics": ["CredentialAccess"], "techniques": ["T1552"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "FullName", "columnName": "Caller" }] },
+      { "entityType": "IP", "fieldMappings": [{ "identifier": "Address", "columnName": "CallerIpAddress" }] },
+      { "entityType": "AzureResource", "fieldMappings": [{ "identifier": "ResourceId", "columnName": "IdRecurso" }] }
+    ]
+  },
+  {
+    "id": "AI-003", "group": "core", "severity": "Medium",
+    "displayName": "AI - Model deployment or logging change by an unapproved identity",
+    "description": "New model deployments, account changes or deleted diagnostic settings on Cognitive Services by an identity outside the IdentidadesDespliegueIA watchlist. Attackers enable models and turn off logging before abusing stolen capacity.",
+    "tactics": ["Impact", "DefenseEvasion"], "techniques": ["T1496", "T1562"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "FullName", "columnName": "Caller" }] },
+      { "entityType": "IP", "fieldMappings": [{ "identifier": "Address", "columnName": "CallerIpAddress" }] },
+      { "entityType": "AzureResource", "fieldMappings": [{ "identifier": "ResourceId", "columnName": "IdRecurso" }] }
+    ]
+  },
+  {
+    "id": "AI-004", "group": "appInsights", "severity": "Medium",
+    "displayName": "AI - Token consumption spike per gateway consumer",
+    "description": "Tokens consumed in the last hour by an API Management subscription are more than five times its hourly average of the previous week. Requires the llm-emit-token-metric policy and workspace-based Application Insights.",
+    "tactics": ["Impact"], "techniques": ["T1496"],
+    "queryFrequency": "PT1H", "queryPeriod": "P7D",
+    "entityMappings": [],
+    "customDetails": { "Consumidor": "Consumidor" }
+  },
+  {
+    "id": "AI-005", "group": "xdr", "severity": "Medium",
+    "displayName": "AI - Unapproved process calling public LLM APIs",
+    "description": "A process other than approved browsers and apps connects to public LLM APIs. Script hosts get high priority: malware such as PROMPTFLUX and PROMPTSTEAL queries LLMs at runtime.",
+    "tactics": ["CommandAndControl", "Execution"], "techniques": ["T1102", "T1059"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Host", "fieldMappings": [{ "identifier": "HostName", "columnName": "DeviceName" }] },
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "InitiatingProcessAccountName" }] }
+    ],
+    "customDetails": { "Prioridad": "Prioridad", "Proceso": "InitiatingProcessFileName" }
+  },
+  {
+    "id": "AI-006", "group": "xdr", "severity": "High",
+    "displayName": "AI - AI coding CLI launched with permission bypass",
+    "description": "An AI coding assistant CLI was started with flags that skip permission prompts. The s1ngularity npm attack used this to make local AI tools hunt for secrets.",
+    "tactics": ["Execution", "CredentialAccess"], "techniques": ["T1059", "T1552"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Host", "fieldMappings": [{ "identifier": "HostName", "columnName": "DeviceName" }] },
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "AccountName" }] },
+      { "entityType": "Process", "fieldMappings": [{ "identifier": "CommandLine", "columnName": "ProcessCommandLine" }] }
+    ]
+  },
+  {
+    "id": "AI-007", "group": "xdr", "severity": "Low",
+    "displayName": "AI - Click on an AI assistant link that writes to memory",
+    "description": "A user clicked a link to an AI assistant whose pre-filled prompt asks it to remember a source as trusted (AI Recommendation Poisoning). Ask the user to review the assistant's saved memories.",
+    "tactics": ["Execution", "Persistence"], "techniques": ["T1204"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "FullName", "columnName": "AccountUpn" }] },
+      { "entityType": "URL", "fieldMappings": [{ "identifier": "Url", "columnName": "Url" }] },
+      { "entityType": "IP", "fieldMappings": [{ "identifier": "Address", "columnName": "IPAddress" }] }
+    ]
+  },
+  {
+    "id": "AI-008", "group": "xdr", "severity": "Medium",
+    "displayName": "AI - Repeated jailbreak attempts against Microsoft 365 Copilot",
+    "description": "Three or more Copilot interactions flagged as jailbreak attempts by the same user within an hour.",
+    "tactics": ["DefenseEvasion"], "techniques": [],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [
+        { "identifier": "AadUserId", "columnName": "AccountObjectId" },
+        { "identifier": "DisplayName", "columnName": "AccountDisplayName" }] }
+    ]
+  },
+  {
+    "id": "AI-009", "group": "entra", "severity": "Medium",
+    "displayName": "AI - Agent identity signing in from a new IP address",
+    "description": "An agent identity listed in the InventarioAgentes watchlist signed in from an IP address not seen in the previous 14 days.",
+    "tactics": ["InitialAccess"], "techniques": ["T1078"],
+    "queryFrequency": "PT1H", "queryPeriod": "P14D",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "ServicePrincipalName" }] },
+      { "entityType": "IP", "fieldMappings": [{ "identifier": "Address", "columnName": "IPAddress" }] }
+    ]
+  },
+  {
+    "id": "MCP-001", "group": "custom", "severity": "High",
+    "displayName": "MCP - Tool definitions differ from the approved fingerprint",
+    "description": "An MCP server returned tool definitions whose fingerprint does not match the one approved in the ServidoresMcpAprobados watchlist, or the server is not registered. Covers rug pulls and shadow servers.",
+    "tactics": ["InitialAccess", "Persistence"], "techniques": ["T1195"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "Servidor" }] }
+    ],
+    "customDetails": { "Motivo": "Motivo" }
+  },
+  {
+    "id": "MCP-002", "group": "custom", "severity": "Low",
+    "displayName": "MCP - Agent using a tool for the first time",
+    "description": "An agent called an MCP tool it had not used in the previous 14 days. Useful to spot injected instructions that steer agents to new tools.",
+    "tactics": ["Execution"], "techniques": [],
+    "queryFrequency": "PT1H", "queryPeriod": "P14D",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "Agente" }] },
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "Servidor" }] }
+    ],
+    "customDetails": { "Herramienta": "Herramienta" }
+  },
+  {
+    "id": "MCP-003", "group": "custom", "severity": "High",
+    "displayName": "MCP - Tool call sending data to an external destination",
+    "description": "Arguments of an MCP tool call contain hosts or email domains outside the internal domain list. A common exfiltration path after a prompt injection.",
+    "tactics": ["Exfiltration"], "techniques": ["T1567"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "FullName", "columnName": "Usuario" }] },
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "Servidor" }] }
+    ],
+    "customDetails": { "Agente": "Agente" }
+  },
+  {
+    "id": "MCP-004", "group": "custom", "severity": "Medium",
+    "displayName": "MCP - Burst of tool calls by one agent",
+    "description": "More than 100 calls to the same MCP tool by the same agent in five minutes. Typical of an agent looping or harvesting data.",
+    "tactics": ["Collection", "Impact"], "techniques": ["T1119"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "Agente" }] },
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "Servidor" }] }
+    ],
+    "customDetails": { "Herramienta": "Herramienta" }
+  },
+  {
+    "id": "A2A-001", "group": "custom", "severity": "High",
+    "displayName": "A2A - Agent Card with invalid signature or unexpected key",
+    "description": "An Agent Card failed signature verification or the same remote agent was signed by more than one key in the last hour.",
+    "tactics": ["DefenseEvasion"], "techniques": ["T1036"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "AgenteRemoto" }] }
+    ],
+    "customDetails": { "Socio": "Socio" }
+  },
+  {
+    "id": "A2A-002", "group": "custom", "severity": "High",
+    "displayName": "A2A - Confidential data sent to an external agent",
+    "description": "An outbound A2A message to an external agent carried data labeled Confidential or Highly Confidential.",
+    "tactics": ["Exfiltration"], "techniques": ["T1567"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "AgenteCliente" }] },
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "AgenteRemoto" }] }
+    ],
+    "customDetails": { "Socio": "Socio", "Etiqueta": "EtiquetaDatos" }
+  },
+  {
+    "id": "A2A-003", "group": "custom", "severity": "Medium",
+    "displayName": "A2A - Task with an unusually long conversation",
+    "description": "An A2A task exceeded 10 turns. Long multi-turn exchanges are how session smuggling slips instructions into an agent.",
+    "tactics": ["Collection"], "techniques": [],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "AgenteCliente" }] },
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "AgenteRemoto" }] }
+    ],
+    "customDetails": { "IdTarea": "IdTarea" }
+  },
+  {
+    "id": "A2A-004", "group": "custom", "severity": "Low",
+    "displayName": "A2A - First contact with an external agent",
+    "description": "An external agent took part in an A2A task for the first time in 14 days. Check it against the partner allowlist.",
+    "tactics": ["InitialAccess"], "techniques": [],
+    "queryFrequency": "PT1H", "queryPeriod": "P14D",
+    "entityMappings": [
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "AgenteRemoto" }] }
+    ],
+    "customDetails": { "Socio": "Socio" }
+  }
+]

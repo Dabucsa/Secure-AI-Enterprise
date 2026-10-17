@@ -1,0 +1,7 @@
+// Burst of tool calls by the same agent: more than 100 in five minutes
+MCPGateway_CL
+| where TimeGenerated > ago(1h)
+| where Operacion == "tools/call"
+| summarize Llamadas = count(), Usuarios = make_set(Usuario, 10)
+    by Agente, Herramienta, Servidor, Ventana = bin(TimeGenerated, 5m)
+| where Llamadas > 100

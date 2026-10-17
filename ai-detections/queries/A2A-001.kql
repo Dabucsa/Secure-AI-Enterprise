@@ -1,0 +1,6 @@
+// Agent Cards with an invalid signature or signed by more than one key
+A2AGateway_CL
+| where TimeGenerated > ago(1h)
+| summarize Fallos = countif(FirmaValida == false), Claves = make_set(IdClave, 10), Tareas = dcount(IdTarea)
+    by Socio, AgenteRemoto
+| where Fallos > 0 or array_length(Claves) > 1

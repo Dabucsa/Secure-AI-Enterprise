@@ -312,8 +312,28 @@ Operational note:
 │   ├── Invoke-WhatIf.ps1               # Preview deployment changes safely
 │   ├── Test-SentinelDeployment.ps1     # Smoke test after deployment
 │   └── Export-AnalyticsRules.ps1       # Utility: export existing rules to JSON
+├── ai-detections/                      # Optional AI detection pack (see below)
 └── README.md
 ```
+
+---
+
+## Optional: AI Detection Pack
+
+The [`ai-detections/`](ai-detections/README.md) folder adds detections for AI workloads on top of the workspace deployed here:
+
+- `MCPGateway_CL` and `A2AGateway_CL` custom tables with a DCE and DCR for the Logs Ingestion API
+- Watchlists for approved AI deployers, agent identities and MCP servers
+- 17 scheduled analytics rules for Azure OpenAI and Foundry, Microsoft 365 Copilot, agent identities, MCP and A2A
+
+```bash
+az deployment group create \
+  -g rg-sentinel \
+  -f ai-detections/main.bicep \
+  -p ai-detections/main.bicepparam
+```
+
+See the [pack README](ai-detections/README.md) for rule groups, gateway event format and offline query validation.
 
 ---
 

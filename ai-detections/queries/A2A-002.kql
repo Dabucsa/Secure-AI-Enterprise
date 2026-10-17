@@ -1,0 +1,7 @@
+// Confidential data sent to an external agent
+A2AGateway_CL
+| where TimeGenerated > ago(1h)
+| where Direccion == "saliente" and Externo == true
+| where EtiquetaDatos in ("Confidencial", "Altamente confidencial", "Confidential", "Highly Confidential")
+| summarize Tareas = dcount(IdTarea), Bytes = sum(BytesEnviados), Habilidades = make_set(Habilidad, 10)
+    by Socio, AgenteCliente, AgenteRemoto, EtiquetaDatos

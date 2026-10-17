@@ -1,0 +1,11 @@
+// MCP tool calls whose arguments point to external destinations (possible exfiltration)
+let dominiosInternos = dynamic(__DOMINIOS_INTERNOS__);
+MCPGateway_CL
+| where TimeGenerated > ago(1h)
+| where Operacion == "tools/call"
+| mv-expand Destino = DestinosEnArgumentos to typeof(string)
+| where isnotempty(Destino)
+| extend Interno = tostring(split(Destino, "@")[-1]) has_any (dominiosInternos)
+| where not(Interno)
+| summarize Llamadas = count(), Herramientas = make_set(Herramienta, 10), Destinos = make_set(Destino, 10)
+    by Agente, Usuario, Servidor
