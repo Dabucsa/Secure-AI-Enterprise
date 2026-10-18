@@ -1,0 +1,11 @@
+// A secret or certificate was added to an agent identity blueprint: with it, anyone can get tokens
+// for every agent identity of the blueprint. Blueprints should use federated credentials only.
+AuditLogs
+| where TimeGenerated > ago(1h)
+| where OperationName has "Certificates and secrets"
+| mv-expand Objetivo = TargetResources
+| where tostring(Objetivo.agentType) == "agenticApp"
+| project TimeGenerated, OperationName, Result,
+          Blueprint = tostring(Objetivo.displayName), BlueprintId = tostring(Objetivo.id),
+          Actor = coalesce(tostring(InitiatedBy.user.userPrincipalName), tostring(InitiatedBy.app.displayName)),
+          IPActor = tostring(InitiatedBy.user.ipAddress)

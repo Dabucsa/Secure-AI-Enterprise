@@ -6,7 +6,7 @@
 @description('Name of the existing Log Analytics workspace with Microsoft Sentinel')
 param workspaceName string
 
-@description('Rule groups to deploy: core, custom, xdr, appInsights, entra')
+@description('Rule groups to deploy: core, custom, xdr, appInsights, entra, agentInventory')
 param enabledGroups array
 
 @description('Create the rules enabled (true) or disabled for review (false)')
@@ -27,6 +27,12 @@ var queries = {
   'AI-007': loadTextContent('../queries/AI-007.kql')
   'AI-008': loadTextContent('../queries/AI-008.kql')
   'AI-009': loadTextContent('../queries/AI-009.kql')
+  'AI-010': loadTextContent('../queries/AI-010.kql')
+  'AI-011': loadTextContent('../queries/AI-011.kql')
+  'AI-012': loadTextContent('../queries/AI-012.kql')
+  'AI-013': loadTextContent('../queries/AI-013.kql')
+  'AI-014': loadTextContent('../queries/AI-014.kql')
+  'AI-015': loadTextContent('../queries/AI-015.kql')
   'MCP-001': loadTextContent('../queries/MCP-001.kql')
   'MCP-002': loadTextContent('../queries/MCP-002.kql')
   'MCP-003': loadTextContent('../queries/MCP-003.kql')

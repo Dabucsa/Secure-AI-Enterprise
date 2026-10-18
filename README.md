@@ -324,7 +324,7 @@ The [`ai-detections/`](ai-detections/README.md) folder adds detections for AI wo
 
 - `MCPGateway_CL` and `A2AGateway_CL` custom tables with a DCE and DCR for the Logs Ingestion API
 - Watchlists for approved AI deployers, agent identities and MCP servers
-- 17 scheduled analytics rules for Azure OpenAI and Foundry, Microsoft 365 Copilot, agent identities, MCP and A2A
+- 23 scheduled analytics rules for Azure OpenAI and Foundry, Microsoft 365 Copilot, agent identities, local AI agents, MCP and A2A
 
 ```bash
 az deployment group create \

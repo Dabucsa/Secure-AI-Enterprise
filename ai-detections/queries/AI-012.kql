@@ -1,0 +1,12 @@
+// The same hour, Defender blocked or audited prompt injection against AI agents on two or more devices:
+// usually a shared malicious repository, package, issue or document
+let alertas = SecurityAlert
+    | where TimeGenerated > ago(1h)
+    | where AlertName has "Suspicious AI prompt injection"
+    | project TimeGenerated, CompromisedEntity, AlertSeverity;
+let equipos = toscalar(alertas | summarize dcount(CompromisedEntity));
+alertas
+| where equipos >= 2
+| summarize Alertas = count(), Severidades = make_set(AlertSeverity), Primera = min(TimeGenerated)
+    by HostName = CompromisedEntity
+| extend EquiposAfectados = equipos

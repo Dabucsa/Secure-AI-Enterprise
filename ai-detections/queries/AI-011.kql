@@ -1,0 +1,9 @@
+// Published cloud agent with MCP servers and no Microsoft Entra Agent ID: no Conditional Access, no ID Protection, no exclusions
+AgentsInfo
+| where TimeGenerated > ago(1d)
+| where Platform != "LocalAgents"
+| summarize arg_max(TimeGenerated, *) by AgentId
+| where LifecycleStatus == "Active" and PublishedStatus == "Published"
+| where isnotempty(McpServers) and isempty(EntraAgentId)
+| project TimeGenerated, AgentId, AgentName, Platform, Model, Availability,
+          Owners = tostring(Owners), McpServers = tostring(McpServers)

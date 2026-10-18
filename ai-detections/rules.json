@@ -102,6 +102,75 @@
     ]
   },
   {
+    "id": "AI-010", "group": "agentInventory", "severity": "Medium",
+    "displayName": "AI - Local AI agent auto-approves actions and has local MCP servers",
+    "description": "Defender for Endpoint discovered a local AI agent (coding CLI, IDE or desktop app) that runs actions without asking the user and has local MCP servers configured. A prompt injection in a file, issue or web page can then act with the user's credentials. Needs the AgentsInfo table in the workspace.",
+    "tactics": ["Execution", "PrivilegeEscalation"], "techniques": ["T1059"],
+    "queryFrequency": "P1D", "queryPeriod": "P1D",
+    "entityMappings": [
+      { "entityType": "Host", "fieldMappings": [{ "identifier": "HostName", "columnName": "DeviceName" }] },
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "AccountName" }] }
+    ],
+    "customDetails": { "Agente": "Agente", "McpLocales": "McpLocales" }
+  },
+  {
+    "id": "AI-011", "group": "agentInventory", "severity": "Low",
+    "displayName": "AI - Published agent with MCP servers and no Entra Agent ID",
+    "description": "A published cloud agent (Copilot Studio, Foundry or another platform in the Agent 365 registry) connects to MCP servers but has no Microsoft Entra Agent ID. Without its own identity it gets no Conditional Access for agents, no ID Protection and no real-time protection exclusions. Needs the AgentsInfo table in the workspace.",
+    "tactics": ["Persistence"], "techniques": [],
+    "queryFrequency": "P1D", "queryPeriod": "P1D",
+    "entityMappings": [
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "AgentName" }] }
+    ],
+    "customDetails": { "Plataforma": "Platform", "Modelo": "Model" }
+  },
+  {
+    "id": "AI-012", "group": "core", "severity": "High",
+    "displayName": "AI - Prompt injection against AI agents on several devices",
+    "description": "Defender for Endpoint AI agent runtime protection raised 'Suspicious AI prompt injection' on two or more devices in the same hour. The usual cause is a shared malicious repository, package, issue or document that several developers opened with their agents.",
+    "tactics": ["InitialAccess", "Execution"], "techniques": ["T1195"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Host", "fieldMappings": [{ "identifier": "HostName", "columnName": "HostName" }] }
+    ],
+    "customDetails": { "EquiposAfectados": "EquiposAfectados" }
+  },
+  {
+    "id": "AI-013", "group": "entra", "severity": "High",
+    "displayName": "AI - Secret or certificate added to an agent identity blueprint",
+    "description": "A secret or certificate was added to an agent identity blueprint. Anyone holding it can get tokens for every agent identity of the blueprint. Blueprints should use federated credentials with a managed identity. Needs Entra audit logs with the agentType property.",
+    "tactics": ["Persistence", "CredentialAccess"], "techniques": ["T1098.001"],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "FullName", "columnName": "Actor" }] },
+      { "entityType": "IP", "fieldMappings": [{ "identifier": "Address", "columnName": "IPActor" }] },
+      { "entityType": "CloudApplication", "fieldMappings": [{ "identifier": "Name", "columnName": "Blueprint" }] }
+    ]
+  },
+  {
+    "id": "AI-014", "group": "xdr", "severity": "Low",
+    "displayName": "AI - First MCP server process on a device",
+    "description": "A process that looks like an MCP server started on a device where no MCP server ran in the previous 14 days. Local MCP servers act with the user's credentials; check that the server is approved.",
+    "tactics": ["Execution"], "techniques": ["T1059"],
+    "queryFrequency": "PT1H", "queryPeriod": "P14D",
+    "entityMappings": [
+      { "entityType": "Host", "fieldMappings": [{ "identifier": "HostName", "columnName": "DeviceName" }] },
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "AccountName" }] }
+    ],
+    "customDetails": { "Ejemplo": "Ejemplo", "Padre": "Padre" }
+  },
+  {
+    "id": "AI-015", "group": "xdr", "severity": "Low",
+    "displayName": "AI - Repeated attempts to reach blocked generative AI apps",
+    "description": "A user hit network protection or SmartScreen blocks on generative AI apps five or more times in an hour. It can mean the approved alternative does not cover a real need, or an attempt to get around the block.",
+    "tactics": ["Exfiltration"], "techniques": [],
+    "queryFrequency": "PT1H", "queryPeriod": "PT1H",
+    "entityMappings": [
+      { "entityType": "Account", "fieldMappings": [{ "identifier": "Name", "columnName": "InitiatingProcessAccountName" }] }
+    ],
+    "customDetails": { "Bloqueos": "Bloqueos" }
+  },
+  {
     "id": "MCP-001", "group": "custom", "severity": "High",
     "displayName": "MCP - Tool definitions differ from the approved fingerprint",
     "description": "An MCP server returned tool definitions whose fingerprint does not match the one approved in the ServidoresMcpAprobados watchlist, or the server is not registered. Covers rug pulls and shadow servers.",

@@ -28,6 +28,9 @@ const builtInTables = {
   UrlClickEvents: 'TimeGenerated:datetime, Timestamp:datetime, Url:string, ActionType:string, AccountUpn:string, IPAddress:string, IsClickedThrough:bool, Workload:string, UrlChain:string',
   CloudAppEvents: 'TimeGenerated:datetime, Timestamp:datetime, ActionType:string, Application:string, AccountDisplayName:string, AccountObjectId:string, AccountId:string, IPAddress:string, RawEventData:dynamic',
   AADServicePrincipalSignInLogs: 'TimeGenerated:datetime, AppId:string, ServicePrincipalName:string, ServicePrincipalId:string, IPAddress:string, ResourceDisplayName:string, ResultType:string',
+  AuditLogs: 'TimeGenerated:datetime, OperationName:string, Category:string, Result:string, InitiatedBy:dynamic, TargetResources:dynamic, AdditionalDetails:dynamic',
+  DeviceEvents: 'TimeGenerated:datetime, Timestamp:datetime, DeviceName:string, ActionType:string, RemoteUrl:string, InitiatingProcessFileName:string, InitiatingProcessAccountName:string, AdditionalFields:dynamic',
+  AgentsInfo: 'TimeGenerated:datetime, Timestamp:datetime, AgentId:string, AgentName:string, Name:string, Platform:string, Version:string, EntraAgentId:string, EntraBlueprintId:string, PublishedStatus:string, LifecycleStatus:string, Availability:string, Owners:dynamic, Model:string, McpServers:dynamic, DeclaredTools:dynamic, RawAgentInfo:dynamic',
 };
 
 // Custom tables come from the same schema files the Bicep templates use

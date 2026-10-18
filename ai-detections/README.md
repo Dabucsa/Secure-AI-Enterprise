@@ -1,6 +1,6 @@
 # AI Detection Pack for Microsoft Sentinel (Bicep)
 
-> **v1.0** — Custom tables, Logs Ingestion API plumbing, watchlists and 17 scheduled analytics rules for AI workloads: Azure OpenAI and Foundry, Microsoft 365 Copilot, agent identities, MCP and A2A.
+> **v1.1** — Custom tables, Logs Ingestion API plumbing, watchlists and 23 scheduled analytics rules for AI workloads: Azure OpenAI and Foundry, Microsoft 365 Copilot, agent identities, local AI agents, MCP and A2A.
 
 Deploys on top of an existing workspace with Microsoft Sentinel enabled, for example the one created by the root template. It is the companion of the study guide *IA Empresarial Segura 2026*; table columns and watchlist names follow that guide, which is written in Spanish.
 
@@ -15,7 +15,7 @@ Deploys on top of an existing workspace with Microsoft Sentinel enabled, for exa
 | **Data collection endpoint + rule** | Logs Ingestion API path from your gateway to both tables |
 | **Role assignment** | Monitoring Metrics Publisher on the DCR for the gateway identity (optional) |
 | **Watchlists** | `IdentidadesDespliegueIA`, `InventarioAgentes`, `ServidoresMcpAprobados` |
-| **Analytics rules** | 17 scheduled rules, deployed by group (below) |
+| **Analytics rules** | 23 scheduled rules, deployed by group (below) |
 
 ### Analytics Rules
 
@@ -30,6 +30,12 @@ Deploys on top of an existing workspace with Microsoft Sentinel enabled, for exa
 | AI-007 | Click on an AI assistant link that writes to memory | Low | `UrlClickEvents` | `enableXdrRules` |
 | AI-008 | Repeated jailbreak attempts against Microsoft 365 Copilot | Medium | `CloudAppEvents` | `enableXdrRules` |
 | AI-009 | Agent identity signing in from a new IP address | Medium | `AADServicePrincipalSignInLogs` + watchlist `InventarioAgentes` | `enableEntraRules` |
+| AI-010 | Local AI agent auto-approves actions and has local MCP servers | Medium | `AgentsInfo` | `enableAgentInventoryRules` |
+| AI-011 | Published agent with MCP servers and no Entra Agent ID | Low | `AgentsInfo` | `enableAgentInventoryRules` |
+| AI-012 | Prompt injection against AI agents on several devices | High | `SecurityAlert` | `enableCoreRules` |
+| AI-013 | Secret or certificate added to an agent identity blueprint | High | `AuditLogs` | `enableEntraRules` |
+| AI-014 | First MCP server process on a device | Low | `DeviceProcessEvents` | `enableXdrRules` |
+| AI-015 | Repeated attempts to reach blocked generative AI apps | Low | `DeviceEvents` | `enableXdrRules` |
 | MCP-001 | Tool definitions differ from the approved fingerprint | High | `MCPGateway_CL` + watchlist `ServidoresMcpAprobados` | `enableGatewayRules` |
 | MCP-002 | Agent using a tool for the first time | Low | `MCPGateway_CL` | `enableGatewayRules` |
 | MCP-003 | Tool call sending data to an external destination | High | `MCPGateway_CL` | `enableGatewayRules` |
@@ -39,7 +45,9 @@ Deploys on top of an existing workspace with Microsoft Sentinel enabled, for exa
 | A2A-003 | Task with an unusually long conversation | Medium | `A2AGateway_CL` | `enableGatewayRules` |
 | A2A-004 | First contact with an external agent | Low | `A2AGateway_CL` | `enableGatewayRules` |
 
-> **Why groups?** Sentinel validates every query when the rule is created, so a rule whose table does not exist fails the whole deployment. Enable a group only when its tables have data: XDR tables need the Defender XDR connector with raw events streamed to Sentinel, `AppMetrics` needs workspace-based Application Insights fed by the APIM `llm-emit-token-metric` policy, and `AADServicePrincipalSignInLogs` needs the Entra ID connector.
+> **Why groups?** Sentinel validates every query when the rule is created, so a rule whose table does not exist fails the whole deployment. Enable a group only when its tables have data: XDR tables need the Defender XDR connector with raw events streamed to Sentinel, `AppMetrics` needs workspace-based Application Insights fed by the APIM `llm-emit-token-metric` policy, and `AADServicePrincipalSignInLogs` and `AuditLogs` need the Entra ID connector.
+>
+> **Agent inventory rules.** `AgentsInfo` is the Defender XDR table for local agents discovered by Defender for Endpoint and for agents in the Agent 365 inventory. Enable `enableAgentInventoryRules` only if the table is queryable from your workspace. The Learn schema names the agent column `AgentName`, while the local agent queries on Learn use `Name`; AI-010 uses `Name` and AI-011 uses `AgentName`, so check both in your tenant. AI-013 relies on the `agentType` property that Entra adds to audit log target resources; confirm that your `AuditLogs` table carries it.
 
 ---
 
@@ -126,11 +134,12 @@ Run it after editing any file in `queries/` or `rules.json`, together with `az b
 | `agentInventory` | array | example | Objects with `appId`, `nombre`, `dueno` |
 | `approvedMcpServers` | array | example | Objects with `servidor`, `huellaAprobada`, `dueno` |
 | `internalDomains` | array | `['contoso.com']` | Destinations outside these raise MCP-003 |
-| `enableCoreRules` | bool | `true` | AI-001 to AI-003 |
+| `enableCoreRules` | bool | `true` | AI-001 to AI-003 and AI-012 |
 | `enableGatewayRules` | bool | `true` | MCP and A2A rules (needs `deployIngestion`) |
-| `enableXdrRules` | bool | `false` | AI-005 to AI-008 |
+| `enableXdrRules` | bool | `false` | AI-005 to AI-008, AI-014 and AI-015 |
 | `enableAppInsightsRules` | bool | `false` | AI-004 |
-| `enableEntraRules` | bool | `false` | AI-009 |
+| `enableEntraRules` | bool | `false` | AI-009 and AI-013 |
+| `enableAgentInventoryRules` | bool | `false` | AI-010 and AI-011 |
 | `rulesEnabled` | bool | `true` | Create the rules enabled or disabled |
 
 Watchlist values are written as CSV, so they must not contain commas. Replace the example values before deploying: with the defaults, every real caller of `ListKeys` will raise AI-002.
@@ -162,6 +171,6 @@ ai-detections/
 ## Validation Status
 
 - `bicep build` and `bicep lint` pass with Bicep CLI 0.48.1, with no warnings.
-- All 17 queries parse and bind without errors in the Kusto language service 12.4.1, and every mapped column exists in the results.
+- All 23 queries parse and bind without errors in the Kusto language service 12.4.1, and every mapped column exists in the results.
 - The test events pass schema validation in dry-run mode.
 - The pack has **not** been deployed to a live tenant yet. Run `az deployment group what-if` first, and deploy with `rulesEnabled=false` the first time.

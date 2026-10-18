@@ -73,7 +73,7 @@ param internalDomains array = [
 
 // --- Rule groups ---
 
-@description('Rules on SecurityAlert and AzureActivity (needs the Azure Activity and Defender for Cloud connectors)')
+@description('Rules on SecurityAlert and AzureActivity (needs the Azure Activity, Defender for Cloud and Defender XDR connectors)')
 param enableCoreRules bool = true
 
 @description('Rules on MCPGateway_CL and A2AGateway_CL')
@@ -85,8 +85,11 @@ param enableXdrRules bool = false
 @description('Rule on AppMetrics from workspace-based Application Insights fed by llm-emit-token-metric')
 param enableAppInsightsRules bool = false
 
-@description('Rule on AADServicePrincipalSignInLogs from the Entra ID connector')
+@description('Rules on AADServicePrincipalSignInLogs and AuditLogs from the Entra ID connector')
 param enableEntraRules bool = false
+
+@description('Rules on the AgentsInfo table (Defender for Endpoint local agent discovery and Agent 365 inventory)')
+param enableAgentInventoryRules bool = false
 
 @description('Create the rules enabled (true) or disabled for review (false)')
 param rulesEnabled bool = true
@@ -103,6 +106,7 @@ var enabledGroups = filter([
   enableXdrRules ? 'xdr' : ''
   enableAppInsightsRules ? 'appInsights' : ''
   enableEntraRules ? 'entra' : ''
+  enableAgentInventoryRules ? 'agentInventory' : ''
 ], g => !empty(g))
 
 // ===========================================================================

@@ -41,6 +41,7 @@ param enableGatewayRules = true
 param enableXdrRules = false
 param enableAppInsightsRules = false
 param enableEntraRules = false
+param enableAgentInventoryRules = false
 
 // Set to false to create the rules disabled and review them first
 param rulesEnabled = true
