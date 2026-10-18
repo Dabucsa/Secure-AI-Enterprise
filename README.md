@@ -337,6 +337,27 @@ See the [pack README](ai-detections/README.md) for rule groups, gateway event fo
 
 ---
 
+## Optional: AI Guardrails Policy Initiative
+
+The [`ai-guardrails/`](ai-guardrails/README.md) folder groups 12 built-in Azure Policy definitions for AI landing zones into one initiative, assigned to a management group:
+
+- Entra ID instead of keys for Azure AI Services, Foundry and AI Search
+- Private network access and approved-outbound managed VNets
+- Approved Foundry model publishers and no preview models
+- Customer-managed keys, diagnostic logs and Defender for AI Services
+
+```bash
+az deployment mg create \
+  --management-group-id <management-group> \
+  -l eastus \
+  -f ai-guardrails/main.bicep \
+  -p ai-guardrails/main.bicepparam
+```
+
+Start in Audit and switch to Deny after reviewing compliance. See the [initiative README](ai-guardrails/README.md) for the control list and rollout.
+
+---
+
 ## Utility: Export Existing Rules
 
 To backup or version-control your existing analytics rules:
