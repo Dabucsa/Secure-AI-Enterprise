@@ -2,7 +2,7 @@
 
 > **v1.0** — One Azure Policy initiative with 12 built-in controls for AI landing zones: Entra ID instead of keys, private network access, approved Foundry models, customer-managed keys, diagnostic logs and Defender for AI Services.
 
-Assign it to the management group that holds your AI workloads (usually **Corp** for internal AI and **Online** for internet-facing AI, as the Cloud Adoption Framework recommends). It complements the platform landing zone policies and the AI Detection Pack in [`../ai-detections`](../ai-detections/README.md). It is the companion of the study guide *IA Empresarial Segura 2026*, which is written in Spanish.
+Assign it to the management group that holds your AI workloads (usually **Corp** for internal AI and **Online** for internet-facing AI, as the Cloud Adoption Framework recommends). It complements the platform landing zone policies and the AI Detection Pack in [`../ai-detections`](../ai-detections/README.md). It is the companion of the study guide [*IA Empresarial Segura 2026*](../guia/README.md), which is written in Spanish.
 
 ---
 
