@@ -2,7 +2,7 @@
 
 > **v1.1** — Custom tables, Logs Ingestion API plumbing, watchlists and 23 scheduled analytics rules for AI workloads: Azure OpenAI and Foundry, Microsoft 365 Copilot, agent identities, local AI agents, MCP and A2A.
 
-Deploys on top of an existing Log Analytics workspace with Microsoft Sentinel enabled. It is the companion of the study guide *IA Empresarial Segura 2026*; table columns and watchlist names follow that guide, which is written in Spanish.
+Deploys on top of an existing Log Analytics workspace with Microsoft Sentinel enabled. It is the companion of the study guide [*IA Empresarial Segura 2026*](../guia/README.md); table columns and watchlist names follow that guide, which is written in Spanish.
 
 ---
 

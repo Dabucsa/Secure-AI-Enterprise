@@ -1,13 +1,16 @@
-# IA Empresarial Segura 2026: código de la guía de estudio
+# IA Empresarial Segura 2026
 
-Código que acompaña a la guía de estudio *IA Empresarial Segura 2026* sobre seguridad de IA con Microsoft. Todo se despliega con Bicep sobre Azure y Microsoft Sentinel, y está pensado para practicar y para usar como punto de partida en proyectos de clientes.
+Guía de estudio sobre seguridad de IA generativa y agentes con Microsoft, y el código que la acompaña. La guía explica cada tema primero de forma agnóstica de fabricante y después con Entra Agent ID, Defender, Purview, Sentinel, Foundry, Azure API Management, Microsoft 365 Copilot y Agent 365. El código se despliega con Bicep sobre Azure y Microsoft Sentinel, y sirve para practicar y como punto de partida en proyectos de clientes.
 
-| Carpeta | Qué tiene | Pestañas de la guía |
+**Empieza por la [guía](guia/README.md).**
+
+| Carpeta | Qué tiene | Partes de la guía |
 |---|---|---|
-| [`ai-detections/`](ai-detections/README.md) | Paquete de detecciones para Microsoft Sentinel: tablas `MCPGateway_CL` y `A2AGateway_CL` con su DCE y DCR, watchlists y 23 reglas programadas para Azure OpenAI y Foundry, Microsoft 365 Copilot, identidades de agentes, agentes locales, MCP y A2A | Defender para IA, Visibilidad de agentes, MCP a fondo, A2A a fondo |
-| [`ai-guardrails/`](ai-guardrails/README.md) | Iniciativa de Azure Policy con 12 políticas integradas para landing zones de IA: Entra ID en lugar de claves, acceso de red privado, modelos aprobados en Foundry, claves administradas por el cliente, logs y Defender for AI Services | Landing zone de IA |
+| [`guia/`](guia/README.md) | El libro de estudio en Markdown: 14 capítulos, 20 partes de profundización y práctica, 24 laboratorios, respuestas de repaso y mapa de certificaciones | Todas |
+| [`ai-detections/`](ai-detections/README.md) | Paquete de detecciones para Microsoft Sentinel: tablas `MCPGateway_CL` y `A2AGateway_CL` con su DCE y DCR, watchlists y 23 reglas programadas para Azure OpenAI y Foundry, Microsoft 365 Copilot, identidades de agentes, agentes locales, MCP y A2A | [Defender para IA](guia/06-defender-para-ia.md), [Visibilidad de agentes](guia/08-visibilidad-de-agentes.md), [MCP a fondo](guia/03-mcp-a-fondo.md), [A2A a fondo](guia/04-a2a-a-fondo.md) |
+| [`ai-guardrails/`](ai-guardrails/README.md) | Iniciativa de Azure Policy con 12 políticas integradas para landing zones de IA: Entra ID en lugar de claves, acceso de red privado, modelos aprobados en Foundry, claves administradas por el cliente, logs y Defender for AI Services | [Landing zone de IA](guia/09-landing-zone-de-ia.md) |
 
-## Inicio rápido
+## Inicio rápido del código
 
 ```bash
 # Detecciones: sobre un workspace existente con Microsoft Sentinel
