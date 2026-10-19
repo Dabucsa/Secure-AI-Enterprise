@@ -1,0 +1,15 @@
+// Processes other than approved apps calling public LLM APIs (malware using an LLM, shadow AI)
+let dominiosLLM = dynamic(["api.openai.com", "generativelanguage.googleapis.com",
+    "api.anthropic.com", "api-inference.huggingface.co", "router.huggingface.co",
+    "api.mistral.ai", "api.deepseek.com", "openrouter.ai"]);
+let aprobados = dynamic(["msedge.exe", "chrome.exe", "firefox.exe", "code.exe", "ms-teams.exe"]);
+let interpretes = dynamic(["wscript.exe", "cscript.exe", "mshta.exe", "rundll32.exe",
+    "powershell.exe", "pwsh.exe", "python.exe", "node.exe"]);
+DeviceNetworkEvents
+| where TimeGenerated > ago(1h)
+| where RemoteUrl has_any (dominiosLLM)
+| where InitiatingProcessFileName !in~ (aprobados)
+| extend Prioridad = iff(InitiatingProcessFileName in~ (interpretes), "Alta", "Revisar")
+| summarize Conexiones = count(), Dominios = make_set(RemoteUrl, 10), Primera = min(TimeGenerated)
+    by DeviceName, InitiatingProcessFileName, InitiatingProcessFolderPath,
+       InitiatingProcessAccountName, Prioridad

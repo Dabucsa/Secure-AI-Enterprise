@@ -1,0 +1,11 @@
+{
+  "name": "ai-detections-tools",
+  "private": true,
+  "description": "Offline validation for the AI detection pack queries",
+  "scripts": {
+    "validate": "node validate-queries.cjs"
+  },
+  "devDependencies": {
+    "@kusto/language-service-next": "12.4.1"
+  }
+}

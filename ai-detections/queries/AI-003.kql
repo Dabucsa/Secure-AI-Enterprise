@@ -1,0 +1,15 @@
+// LLMjacking precursors: new model deployments or deleted diagnostic settings on AI resources
+let aprobadas = _GetWatchlist("IdentidadesDespliegueIA") | project Identidad = tostring(SearchKey);
+AzureActivity
+| where TimeGenerated > ago(1h)
+| where OperationNameValue in~ (
+    "MICROSOFT.COGNITIVESERVICES/ACCOUNTS/DEPLOYMENTS/WRITE",
+    "MICROSOFT.COGNITIVESERVICES/ACCOUNTS/WRITE",
+    "MICROSOFT.INSIGHTS/DIAGNOSTICSETTINGS/DELETE")
+| where ActivityStatusValue in~ ("Success", "Succeeded")
+| where OperationNameValue !~ "MICROSOFT.INSIGHTS/DIAGNOSTICSETTINGS/DELETE"
+    or _ResourceId contains "microsoft.cognitiveservices"
+| where Caller !in (aprobadas)
+| summarize Operaciones = make_set(OperationNameValue), Recursos = make_set(_ResourceId, 10),
+    Primera = min(TimeGenerated) by Caller, CallerIpAddress
+| extend IdRecurso = tostring(Recursos[0])

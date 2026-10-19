@@ -1,0 +1,10 @@
+// External agent contacted for the first time in 14 days
+let conocidos = A2AGateway_CL
+    | where TimeGenerated between (ago(14d) .. ago(1h))
+    | distinct AgenteRemoto;
+A2AGateway_CL
+| where TimeGenerated > ago(1h)
+| where Externo == true
+| where AgenteRemoto !in (conocidos)
+| summarize Tareas = dcount(IdTarea), Habilidades = make_set(Habilidad, 10), Primera = min(TimeGenerated)
+    by AgenteRemoto, Socio, AgenteCliente

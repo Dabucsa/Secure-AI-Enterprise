@@ -1,0 +1,11 @@
+// Local AI agent that acts without asking for approval and has local MCP servers configured
+AgentsInfo
+| where TimeGenerated > ago(1d)
+| where Platform == "LocalAgents"
+| summarize arg_max(TimeGenerated, Name, Version, LifecycleStatus, RawAgentInfo) by AgentId
+| where LifecycleStatus !in~ ("Deleted", "Uninstalled")
+| extend Meta = RawAgentInfo.localAgentMetadata
+| where tostring(Meta.autoApprove) == "true" and array_length(Meta.localMcps) > 0
+| project TimeGenerated, AgentId, Agente = Name, Version,
+          DeviceName = tostring(Meta.deviceName), AccountName = tostring(Meta.accountName),
+          McpLocales = tostring(Meta.localMcps)

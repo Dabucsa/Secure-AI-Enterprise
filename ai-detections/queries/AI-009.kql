@@ -1,0 +1,12 @@
+// Agent identity signing in from an IP address not seen in the last 14 days
+let agentes = _GetWatchlist("InventarioAgentes") | project AppId = tostring(SearchKey);
+let conocidas = AADServicePrincipalSignInLogs
+    | where TimeGenerated between (ago(14d) .. ago(1h))
+    | where AppId in (agentes)
+    | distinct AppId, IPAddress;
+AADServicePrincipalSignInLogs
+| where TimeGenerated > ago(1h)
+| where AppId in (agentes)
+| join kind=leftanti conocidas on AppId, IPAddress
+| summarize Inicios = count(), Recursos = make_set(ResourceDisplayName, 10), Primera = min(TimeGenerated)
+    by ServicePrincipalName, AppId, IPAddress

@@ -1,0 +1,10 @@
+// Azure OpenAI / Foundry keys listed by an identity outside the approved deployers
+let aprobadas = _GetWatchlist("IdentidadesDespliegueIA") | project Identidad = tostring(SearchKey);
+AzureActivity
+| where TimeGenerated > ago(1h)
+| where OperationNameValue =~ "MICROSOFT.COGNITIVESERVICES/ACCOUNTS/LISTKEYS/ACTION"
+| where ActivityStatusValue in~ ("Success", "Succeeded")
+| where Caller !in (aprobadas)
+| summarize Veces = count(), Recursos = make_set(_ResourceId, 10), Primera = min(TimeGenerated)
+    by Caller, CallerIpAddress
+| extend IdRecurso = tostring(Recursos[0])

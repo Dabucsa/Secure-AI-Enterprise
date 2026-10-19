@@ -1,0 +1,13 @@
+// First MCP server process on a device in the last 14 days (local MCP servers run with the user's credentials)
+let patrones = dynamic(["@modelcontextprotocol/", "mcp-server", "mcp_server", "fastmcp"]);
+let conocidos = DeviceProcessEvents
+    | where TimeGenerated between (ago(14d) .. ago(1h))
+    | where ProcessCommandLine has_any (patrones)
+    | distinct DeviceName;
+DeviceProcessEvents
+| where TimeGenerated > ago(1h)
+| where ProcessCommandLine has_any (patrones)
+| where DeviceName !in (conocidos)
+| summarize Procesos = count(), Ejemplo = take_any(ProcessCommandLine), Padre = take_any(InitiatingProcessFileName),
+            Primera = min(TimeGenerated)
+    by DeviceName, AccountName

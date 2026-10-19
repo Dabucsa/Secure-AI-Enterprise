@@ -1,0 +1,16 @@
+[
+  { "name": "TimeGenerated", "type": "datetime", "description": "Event time at the gateway" },
+  { "name": "Direccion", "type": "string", "description": "entrante or saliente" },
+  { "name": "Externo", "type": "boolean", "description": "True when the remote agent belongs to another organization" },
+  { "name": "Socio", "type": "string", "description": "Partner organization of the remote agent" },
+  { "name": "AgenteCliente", "type": "string", "description": "Agent that sends the task" },
+  { "name": "AgenteRemoto", "type": "string", "description": "Agent that receives the task, from its Agent Card" },
+  { "name": "Habilidad", "type": "string", "description": "Skill ID requested from the remote agent" },
+  { "name": "IdTarea", "type": "string", "description": "A2A task ID" },
+  { "name": "Turno", "type": "int", "description": "Message number within the task" },
+  { "name": "EstadoTarea", "type": "string", "description": "A2A task state, for example working, input-required or completed" },
+  { "name": "FirmaValida", "type": "boolean", "description": "Result of the Agent Card signature check" },
+  { "name": "IdClave", "type": "string", "description": "kid of the key that signed the Agent Card" },
+  { "name": "EtiquetaDatos", "type": "string", "description": "Highest sensitivity label found in the message" },
+  { "name": "BytesEnviados", "type": "long", "description": "Size of the message sent" }
+]

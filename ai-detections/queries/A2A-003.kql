@@ -1,0 +1,5 @@
+// A2A task with more than 10 turns: a possible sign of session smuggling
+A2AGateway_CL
+| where TimeGenerated > ago(1h)
+| summarize Turnos = max(Turno), Estados = make_set(EstadoTarea, 10) by IdTarea, Socio, AgenteCliente, AgenteRemoto
+| where Turnos > 10

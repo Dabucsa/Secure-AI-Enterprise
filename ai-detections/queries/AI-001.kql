@@ -1,0 +1,9 @@
+// Three or more Defender for AI alerts on the same AI resource within an hour
+SecurityAlert
+| where TimeGenerated > ago(1h)
+| where AlertType startswith "AI." or ProductComponentName in~ ("AI", "AIServices")
+| extend Recurso = tostring(parse_json(ExtendedProperties)["Resource Name"])
+| summarize Alertas = count(), Tipos = make_set(AlertName, 10), IdsRecurso = make_set(ResourceId, 5)
+    by Recurso
+| where Alertas >= 3
+| extend IdRecurso = tostring(IdsRecurso[0])

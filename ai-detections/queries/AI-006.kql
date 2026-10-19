@@ -1,0 +1,6 @@
+// AI coding CLIs launched with permission-bypass flags (s1ngularity pattern)
+DeviceProcessEvents
+| where TimeGenerated > ago(1h)
+| where ProcessCommandLine has_any ("--dangerously-skip-permissions", "--yolo", "--trust-all-tools")
+| project TimeGenerated, DeviceName, AccountName, FileName, ProcessCommandLine,
+    InitiatingProcessFileName, InitiatingProcessCommandLine

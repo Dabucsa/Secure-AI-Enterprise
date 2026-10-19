@@ -1,0 +1,11 @@
+// MCP server whose tool definitions do not match the approved fingerprint (rug pull or unregistered server)
+let aprobados = _GetWatchlist("ServidoresMcpAprobados")
+    | project Servidor = tostring(SearchKey), HuellaAprobada = tostring(HuellaAprobada);
+MCPGateway_CL
+| where TimeGenerated > ago(1h)
+| where Operacion == "tools/list"
+| join kind=leftouter aprobados on Servidor
+| where isempty(HuellaAprobada) or HuellaDefiniciones != HuellaAprobada
+| summarize Listados = count(), Huellas = make_set(HuellaDefiniciones, 5), Clientes = make_set(Cliente, 10),
+    Primera = min(TimeGenerated) by Servidor, VersionServidor, HuellaAprobada
+| extend Motivo = iff(isempty(HuellaAprobada), "Servidor no registrado", "Definiciones cambiadas")

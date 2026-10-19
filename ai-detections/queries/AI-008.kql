@@ -1,0 +1,9 @@
+// Repeated jailbreak attempts against Microsoft 365 Copilot by the same user
+CloudAppEvents
+| where TimeGenerated > ago(1h)
+| where ActionType == "CopilotInteraction"
+| extend Mensajes = parse_json(RawEventData).CopilotEventData.Messages
+| mv-expand Mensajes
+| where tobool(Mensajes.JailbreakDetected)
+| summarize Intentos = count() by AccountDisplayName, AccountObjectId
+| where Intentos >= 3
