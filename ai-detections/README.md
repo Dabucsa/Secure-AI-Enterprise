@@ -2,7 +2,7 @@
 
 > **v1.1** — Custom tables, Logs Ingestion API plumbing, watchlists and 23 scheduled analytics rules for AI workloads: Azure OpenAI and Foundry, Microsoft 365 Copilot, agent identities, local AI agents, MCP and A2A.
 
-Deploys on top of an existing workspace with Microsoft Sentinel enabled, for example the one created by the root template. It is the companion of the study guide *IA Empresarial Segura 2026*; table columns and watchlist names follow that guide, which is written in Spanish.
+Deploys on top of an existing Log Analytics workspace with Microsoft Sentinel enabled. It is the companion of the study guide *IA Empresarial Segura 2026*; table columns and watchlist names follow that guide, which is written in Spanish.
 
 ---
 
@@ -53,7 +53,7 @@ Deploys on top of an existing workspace with Microsoft Sentinel enabled, for exa
 
 ## Prerequisites
 
-1. **Existing workspace** with Microsoft Sentinel enabled (deploy the root template first if needed)
+1. **Existing Log Analytics workspace** with Microsoft Sentinel enabled
 2. **Permissions**: `Microsoft Sentinel Contributor` and `Log Analytics Contributor` on the resource group; `User Access Administrator` or `Owner` if you set `gatewayPrincipalId`
 3. **Azure CLI** with Bicep support
 4. For the core rules: the **Azure Activity** and **Defender for Cloud** connectors, and Defender for AI Services enabled on your AI resources

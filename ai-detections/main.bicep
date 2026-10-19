@@ -1,12 +1,12 @@
 // ============================================================================
 // AI Detection Pack for Microsoft Sentinel
-// Version: 1.0.0
+// Version: 1.1.0
 // Description: Custom tables and Logs Ingestion API plumbing for MCP and A2A
 //              gateway logs, watchlists, and scheduled analytics rules for
 //              AI workloads (Azure OpenAI/Foundry, Copilot, agents, MCP, A2A).
 //
-// Deploys on top of an existing workspace with Microsoft Sentinel enabled,
-// for example the one created by ../main.bicep.
+// Deploys on top of an existing Log Analytics workspace with Microsoft
+// Sentinel enabled.
 //
 // Usage:
 //   az deployment group create \
