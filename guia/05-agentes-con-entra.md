@@ -29,7 +29,28 @@ La primera decisión es con qué identidad actúa el agente en cada llamada. Un 
 
 La idea que lo ordena todo: **la identidad del agente no tiene credenciales; las tiene el blueprint**, y Entra encadena dos tokens para que el agente obtenga el suyo.
 
-&#91;embedded content: flujo de tokens de Entra Agent ID · 3 pasos, OBO opcional\]
+```mermaid
+%% El agente no guarda secretos: Entra encadena dos tokens
+%% Flujo de Entra Agent ID; cada paso es una solicitud de token a Entra ID
+flowchart TB
+    credencial["<b>Credencial del blueprint</b><br/>identidad administrada o certificado"]
+    blueprint["<b>Blueprint del agente</b><br/>el único que guarda credenciales"]
+    agente["<b>Identidad del agente</b><br/>sin credenciales; canjea T1"]
+    api["<b>API o recurso</b><br/>valida aud, scp o roles y xms_par_app_azp"]
+    usuario["<b>Token del usuario (Tc)</b><br/>solo en OBO; audiencia = blueprint"]
+    nota["Desde el blueprint se puede deshabilitar a todos sus agentes a la vez."]
+
+    credencial -->|"1 · token de la identidad administrada"| blueprint
+    blueprint -->|"2 · T1 para la identidad del agente (fmi_path)"| agente
+    agente -->|"3 · token del recurso, autónomo u OBO"| api
+    usuario --> agente
+    api ~~~ nota
+
+    classDef principal stroke-width:3px
+    class agente principal
+```
+
+*Diagrama: flujo de tokens de Entra Agent ID · 3 pasos, OBO opcional.*
 
 En el modo autónomo no hay usuario y el token final es solo de aplicación. En OBO, el paso 3 usa además el token del usuario y el resultado lo tiene como sujeto.
 

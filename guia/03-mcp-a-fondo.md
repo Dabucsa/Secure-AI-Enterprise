@@ -59,7 +59,34 @@ Desde diciembre de 2025 el protocolo está bajo la Agentic AI Foundation de la L
 
 En una arquitectura madura **ningún cliente habla directamente con un servidor MCP remoto**: todo pasa por un gateway que solo deja ver las herramientas aprobadas en el registro, con tokens del IdP corporativo. Los servidores locales, que no pueden pasar por el gateway, se contienen en el endpoint.
 
-&#91;embedded content: arquitectura empresarial de MCP · registro, gateway, IdP y servidores locales y remotos\]
+```mermaid
+%% El registro y el gateway deciden qué herramientas ve cada agente
+flowchart TB
+    idp["<b>IdP corporativo</b><br/>Entra ID, Okta"]
+    registro["<b>Registro aprobado</b><br/>API Center o privado"]
+    inventario["<b>Inventario y bloqueo</b><br/>Agent 365"]
+    hosts["<b>Hosts y clientes</b><br/>VS Code, GitHub Copilot<br/>Claude, Copilot Studio<br/>Foundry Agent Service<br/>Agentes propios"]
+    gw["<b>Gateway MCP</b><br/>Token y scopes<br/>Política por herramienta<br/>Argumentos y respuestas<br/>Huella de definiciones<br/>Límites y logs"]
+    remotos["<b>Servidores remotos</b><br/>APIs internas como MCP<br/>SaaS: GitHub, Atlassian<br/>Work IQ de Microsoft 365<br/>Azure MCP Server"]
+    locales["<b>Servidores locales</b><br/>stdio en contenedor<br/>Configurados por MDM"]
+    siem["<b>SIEM (Sentinel)</b><br/>Logs de gateway y EDR<br/>Detecciones de MCP"]
+    apis["<b>APIs y datos</b><br/>Acceso con OBO<br/>Nunca token passthrough"]
+
+    idp -->|"token"| hosts
+    registro -->|"lista aprobada"| gw
+    inventario -->|"inventario"| remotos
+    hosts -->|"MCP + token"| gw
+    gw -->|"aprobadas"| remotos
+    hosts -->|"stdio"| locales
+    gw -->|"logs"| siem
+    remotos -->|"OBO"| apis
+    locales -->|"EDR"| siem
+
+    classDef principal stroke-width:3px
+    class gw principal
+```
+
+*Diagrama: arquitectura empresarial de MCP · registro, gateway, IdP y servidores locales y remotos.*
 
 El gateway es el único componente que ve todas las llamadas; por eso concentra la política y envía los logs al SIEM, al que también llegan las señales del EDR sobre servidores locales.
 
@@ -77,7 +104,25 @@ El gateway es el único componente que ve todas las llamadas; por eso concentra 
 
 MCP usa OAuth 2.1: el servidor MCP es un *resource server*, el IdP corporativo emite los tokens y el cliente pide un token **cuya audiencia es ese servidor y ningún otro**. Así, un token robado o reenviado no sirve contra otra API.
 
-&#91;embedded content: flujo de autorización de MCP · 9 pasos entre servidor, cliente e IdP\]
+```mermaid
+%% El token solo sirve para el servidor MCP que lo pidió
+sequenceDiagram
+    participant S as Servidor MCP
+    participant C as Cliente MCP
+    participant I as IdP (Entra, Okta)
+
+    C->>S: 1. Llamada sin token
+    S->>C: 2. 401 + resource_metadata
+    C->>S: 3. Metadatos del recurso (RFC 9728)
+    C->>I: 4. Descubre el IdP y se registra
+    C->>I: 5. Login: code + PKCE + resource
+    I->>C: 6. Token con audiencia del servidor
+    C->>S: 7. Llamada con Bearer
+    Note over S: 8. Valida firma, emisor,<br/>audiencia y scopes
+    S->>C: 9. Resultado de la herramienta
+```
+
+*Diagrama: flujo de autorización de MCP · 9 pasos entre servidor, cliente e IdP.*
 
 El servidor responde 401 con la URL de sus metadatos; el cliente descubre el IdP, se registra, el usuario inicia sesión con PKCE y el cliente recibe un token ligado al servidor, que este valida en cada llamada.
 

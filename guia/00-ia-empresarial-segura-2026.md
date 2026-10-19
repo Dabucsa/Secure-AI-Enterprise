@@ -153,7 +153,41 @@ La responsabilidad depende de cuánto del stack operas tú. Microsoft lo divide 
 
 Una arquitectura de IA segura tiene cinco capas y un solo punto de paso obligatorio: todo el tráfico hacia modelos, herramientas y otros agentes pasa por un **AI gateway**. Cuatro controles —identidad, protección de datos, observabilidad y gobierno— atraviesan todas las capas. Si recuerdas un solo dibujo de este libro, que sea este.
 
-&#91;embedded content: arquitectura de referencia · 5 capas, 1 gateway, 4 controles transversales\]
+```mermaid
+%% Todo el tráfico a modelos y herramientas pasa por el gateway
+flowchart TB
+    canales["<b>Usuarios y canales</b><br/>Personas (Teams, web, móvil), sistemas por API, otros agentes por A2A"]
+    apps["<b>Aplicaciones y agentes</b><br/>Copilots SaaS, apps propias, agentes low-code y agentes de código"]
+    orq["<b>Orquestación de agentes</b><br/>Planificación, memoria y prompt de sistema; SDKs como LangGraph"]
+    gw["<b>AI gateway: punto de paso obligatorio</b><br/>Autenticación, cuotas de tokens, enrutamiento y failover<br/>Guardrails de entrada y salida, caché semántica, logging y costos"]
+    modelos["<b>Modelos</b><br/>OpenAI, Anthropic,<br/>Llama, propios"]
+    datos["<b>Datos y RAG</b><br/>Índices con ACL,<br/>SharePoint, lagos"]
+    herramientas["<b>Herramientas</b><br/>Servidores MCP,<br/>APIs y agentes A2A"]
+
+    subgraph transversales["Controles transversales"]
+        identidad["<b>Identidad</b><br/>Usuarios, agentes y apps<br/>Mínimo privilegio, CA"]
+        proteccion["<b>Protección de datos</b><br/>Clasificación, etiquetas<br/>DLP, cifrado, residencia"]
+        observabilidad["<b>Observabilidad y SOC</b><br/>Trazas, prompts, costos<br/>SIEM, detección, respuesta"]
+        gobierno["<b>Gobierno</b><br/>Inventario y riesgo<br/>Evaluaciones, políticas"]
+        identidad ~~~ proteccion ~~~ observabilidad ~~~ gobierno
+    end
+
+    canales --> apps --> orq --> gw
+    gw --> modelos
+    gw --> datos
+    gw --> herramientas
+
+    canales -.- transversales
+    apps -.- transversales
+    orq -.- transversales
+    gw -.- transversales
+    herramientas -.- transversales
+
+    classDef principal stroke-width:3px
+    class gw principal
+```
+
+*Diagrama: arquitectura de referencia · 5 capas, 1 gateway, 4 controles transversales.*
 
 Las líneas punteadas indican que los controles transversales se aplican en cada capa, no en un solo punto. El gateway es el único lugar donde puedes aplicar política a *todo* el tráfico de IA, sin importar qué equipo construyó la aplicación.
 
@@ -1000,7 +1034,33 @@ Los marcos de Microsoft (Cloud Adoption Framework, Well-Architected, MCSB v2, Ze
 
 Aplica fuera de la UE si pones un sistema en el mercado europeo o si su resultado se usa en la UE. El **Digital Omnibus** (Reglamento UE 2026/1744, publicado el 24 de julio de 2026 y en vigor desde el 27 de julio) aplazó las obligaciones de alto riesgo ([Cooley](https://cdp.cooley.com/digital-ai-omnibus-delays-key-deadlines-introduces-new-rules/), [Jones Walker](https://www.joneswalker.com/en/insights/blogs/ai-law-blog/yes-august-2-still-matters-the-eu-approved-a-high-risk-ai-delay-but-most-trans.html)).
 
-&#91;embedded content: EU AI Act · hitos de 2024 a 2028 tras el Digital Omnibus\]
+```mermaid
+%% La próxima obligación de alto riesgo llega en diciembre de 2027
+%% Hitos del EU AI Act después del Digital Omnibus (Reglamento UE 2026/1744)
+flowchart TB
+    subgraph aplica["Ya aplica"]
+        vigor["Entrada en vigor<br/>1 ago 2024"]
+        prohib["Prácticas prohibidas y alfabetización<br/>2 feb 2025"]
+        gpai["Proveedores de modelos GPAI<br/>2 ago 2025"]
+        art50["Aplicación general y artículo 50<br/>2 ago 2026"]
+    end
+
+    hoy["<b>Hoy</b><br/><b>17 oct 2026</b>"]
+
+    subgraph pendiente["Pendiente"]
+        marcado["Marcado de contenido (gracia)<br/>2 dic 2026"]
+        legacy["Modelos GPAI anteriores<br/>2 ago 2027"]
+        anexo3["<b>Alto riesgo: Anexo III</b><br/>2 dic 2027"]
+        anexo1["Alto riesgo: Anexo I<br/>2 ago 2028"]
+    end
+
+    vigor --- prohib --- gpai --- art50 --- hoy --- marcado --- legacy --- anexo3 --- anexo1
+
+    classDef principal stroke-width:3px
+    class hoy principal
+```
+
+*Diagrama: EU AI Act · hitos de 2024 a 2028 tras el Digital Omnibus.*
 
 Las prohibiciones, las obligaciones de modelos de propósito general y la transparencia del artículo 50 ya aplican; el alto riesgo de Anexo III (empleo, educación, crédito, servicios esenciales) llega el 2 de diciembre de 2027.
 
@@ -1368,7 +1428,23 @@ Todavía temprano, pero creciendo en cadena de suministro, cotizaciones, logíst
 
 Un programa de seguridad de IA arranca con **visibilidad**, sigue con **controles base** y termina el primer trimestre con **operación**: el SOC detecta y responde a incidentes de IA. Cada fase tiene una puerta: no avances sin cumplir su criterio.
 
-&#91;embedded content: roadmap de 90 días · 3 fases, 2 puertas\]
+```mermaid
+%% En 90 días se pasa de no ver la IA a detectarla y responder
+flowchart LR
+    f1["Días 0 a 30<br/><b>Visibilidad</b><br/><br/>Inventario de apps y agentes<br/>Descubrir shadow AI<br/>Evaluar oversharing<br/>Política de uso aceptable<br/>Comité y dueños nombrados"]
+    f2["Días 31 a 60<br/><b>Controles base</b><br/><br/>Gateway delante de modelos<br/>Sin API keys: solo Entra ID<br/>Etiquetas y DLP para IA<br/>Agent ID y sponsors<br/>Guardrails por defecto"]
+    f3["Días 61 a 90<br/><b>Operación</b><br/><br/>Logs de IA en Sentinel<br/>Detecciones y playbooks<br/>Red team del caso crítico<br/>Proceso de aprobación<br/>Métricas al comité"]
+    p1{"<b>Puerta 1</b><br/>Inventario completo<br/>y dueños asignados"}
+    p2{"<b>Puerta 2</b><br/>Todo el tráfico de IA<br/>pasa por el gateway"}
+
+    f1 --- p1 --> f2
+    f2 --- p2 --> f3
+
+    classDef principal stroke-width:3px
+    class p1,p2 principal
+```
+
+*Diagrama: roadmap de 90 días · 3 fases, 2 puertas.*
 
 La Puerta 1 exige que cada app y agente conocido tenga dueño; la Puerta 2, que ninguna aplicación llame a un modelo sin pasar por el gateway. Después de los 90 días el trabajo pasa a ser continuo: nuevas olas de Copilot, agentes más autónomos y certificación ISO/IEC 42001 si el negocio la necesita.
 

@@ -48,7 +48,38 @@ Un sistema real usa los dos: el agente de compras llama a su ERP por MCP y deleg
 
 El agente que habla con el exterior **no habla directamente con nadie**: sus tareas pasan por un gateway A2A que autentica en ambos sentidos, solo acepta socios y claves aprobados, inspecciona los mensajes y registra todo. Y ese agente no tiene acceso a sistemas sensibles: delega en agentes internos que aplican sus propias reglas.
 
-&#91;embedded content: arquitectura A2A · agentes internos, gateway y un socio externo\]
+```mermaid
+%% Las tareas con socios pasan por un gateway que fija claves y límites
+flowchart LR
+    subgraph empresa["Tu empresa"]
+        idp["<b>IdP (Entra ID)</b><br/>Identidad de cada agente"]
+        registro["<b>Registro de agentes</b><br/>Agent 365 y tarjetas"]
+        compras["<b>Agente de compras</b><br/>Delega cotizaciones<br/>Sin acceso a pagos"]
+        gw["<b>Gateway A2A</b><br/>mTLS y tokens<br/>Socios y claves fijadas<br/>Inspección de mensajes<br/>Límites y logs"]
+        finanzas["<b>Agente de finanzas</b><br/>Paga con reglas propias<br/>y aprobación humana"]
+        siem["<b>SIEM (Sentinel)</b><br/>Tareas, turnos y firmas"]
+    end
+
+    subgraph socio["Socio externo"]
+        idpsocio["<b>IdP del socio</b><br/>Emite sus tokens"]
+        proveedor["<b>Agente proveedor</b><br/>Agent Card firmada<br/>Cotiza y entrega"]
+        opaco["<b>Opaco para ti</b><br/>Su modelo y<br/>sus herramientas"]
+    end
+
+    idp -->|"token"| compras
+    registro -->|"socios aprobados"| gw
+    compras -->|"tarea"| gw
+    gw -->|"mTLS"| proveedor
+    gw --> finanzas
+    gw -->|"logs"| siem
+    idpsocio -->|"token"| proveedor
+    proveedor --> opaco
+
+    classDef principal stroke-width:3px
+    class gw principal
+```
+
+*Diagrama: arquitectura A2A · agentes internos, gateway y un socio externo.*
 
 Del lado del socio todo es opaco: no ves su modelo ni sus herramientas, solo su tarjeta firmada y sus respuestas, que tu agente valida antes de usarlas.
 
